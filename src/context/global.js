@@ -6,7 +6,7 @@ const IDS = [
     16498, 1535, 5114, 30276, 11757, 38000, 31964, 20, 11061, 22319, 32281, 40748, 9253, 1735, 19815, 35760, 21, 28851, 
     1575, 23273, 4224, 31240, 1, 11617, 43299, 47917, 28121, 30831, 39196, 48316, 43439, 58224, 52034, 49596, 20583, 
     32615, 20507, 22199, 6547, 24833, 10620, 33352, 9919, 28223, 2904, 38691, 37999, 37450, 6702, 18679, 34572, 14719, 35849, 28171,
-    13601, 13601, 3588, 28999, 2001, 29803, 50265, 35790, 44511, 37521, 10087, 34933, 37430, 2167, 6746, 31478, 42897, 5081, 34599, 14741,
+    13601, 13601, 3588, 28999, 2001, 29803, 50265, 35790, 44511, 37521, 10087, 34933, 37430, 6746, 31478, 42897, 5081, 34599, 14741,
     39535, 9756, 42249, 7054, 6880, 33206, 37520, 813, 37349, 918, 5680, 33255, 17265, 889, 40221, 10165, 48926, 32995, 39195, 41457, 249, 42310, 32542, 37976,
     41226, 46102, 40586, 38472, 6675, 33926, 20057, 52701, 30016, 48849, 14349, 50416, 52741, 19647, 48753, 15809
 ];
@@ -46,7 +46,6 @@ export const GlobalContextProvider = ({children}) => {
     }
 
     const [state, dispatch] = useReducer(reducer, intialState);
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const getRandomAnime = async () => {
         dispatch({ type: LOADING });
@@ -54,10 +53,11 @@ export const GlobalContextProvider = ({children}) => {
         const [id1, id2] = getRandomAnimeIds();
 
         try {
-            const response1 = await fetch(`https://api.jikan.moe/v4/anime/${id1}`);
+            const [response1, response2] = await Promise.all([
+                fetch(`https://api.jikan.moe/v4/anime/${id1}`),
+                fetch(`https://api.jikan.moe/v4/anime/${id2}`)
+            ]);
             const data1 = await response1.json();
-    
-            const response2 = await fetch(`https://api.jikan.moe/v4/anime/${id2}`);
             const data2 = await response2.json();
     
             dispatch({ type: GET_RANDOM_ANIME, payload: [data1.data, data2.data] });

@@ -2,12 +2,14 @@ import React, { useEffect } from 'react'
 import { useGlobalContext } from '../context/global'
 import styled from 'styled-components'
 
+
 function Game() {
   const {randomAnime, getRandomAnime} = useGlobalContext();
 
   const handleButtonClick = (action) => {
     action();
   };
+
 
   
   useEffect(() => {
@@ -22,7 +24,7 @@ function Game() {
           <CardImageWrapper>
             <img src={randomAnime[0].images.jpg.large_image_url} alt={randomAnime[0].title} />
             <div className="title-overlay">{randomAnime[0].title}</div>
-            <div className="rank-overlay">{randomAnime[0].rank}</div>
+            <div className="rank-overlay">Rank: {randomAnime[0].rank}</div>
           </CardImageWrapper>
         </LeftAnimeCard>
         <RightAnimeCard>
@@ -30,6 +32,10 @@ function Game() {
             <img src={randomAnime[1].images.jpg.large_image_url} alt={randomAnime[1].title} />
             <div className="title-overlay">{randomAnime[1].title}</div>
           </CardImageWrapper>
+          <ButtonContainer>
+            <button>Higher <i className="fas fa-arrow-up"></i></button>
+            <button>Lower <i className="fas fa-arrow-down"></i></button>
+          </ButtonContainer>
         </RightAnimeCard>
       </>
     )}
@@ -62,7 +68,7 @@ const CardImageWrapper = styled.div`
 
   .title-overlay {
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff; 
@@ -74,15 +80,44 @@ const CardImageWrapper = styled.div`
   }
   .rank-overlay {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #fff; 
-    font-size: 1.5rem; 
+    color: #ECBD00; 
+    font-size: 2.5rem; 
     z-index: 1; 
     background: rgba(0, 0, 0, 0.5); 
     padding: 0.5rem; 
     border-radius: 5px; 
+  }
+`;
+const ButtonContainer = styled.div`
+  position: absolute; 
+  top: 50%;
+  left: 75%;
+  transform: translateX(-50%);
+  flex-direction: column;
+  display: flex;
+  gap: .5rem;
+  z-index: 3; 
+
+  button {
+    background-color: transparent;
+    color: #FFD700;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    padding: 1.25rem 2.25rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #52016e;
+    }
+    i {
+      margin-left: 1.5rem; 
+    }
   }
 `;
 
@@ -104,5 +139,11 @@ const RightAnimeCard = styled.div`
   padding: 1rem;
   text-align: center;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
 `;
+
+
+
 export default Game
