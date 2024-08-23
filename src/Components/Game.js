@@ -5,19 +5,36 @@ import styled from 'styled-components'
 
 function Game() {
   const {randomAnime, getRandomAnime, getOneRandomAnime} = useGlobalContext();
+  const [showRank, setShowRank] = React.useState(false);
+  const [showButtons, setShowButtons] = React.useState(true);
+  const [rankToShow, setRankToShow] = React.useState(null);
 
 
   const handleHigherClick = async () => {
-    if (randomAnime[1]?.rank < randomAnime[0]?.rank) {
-      await getOneRandomAnime();
-    }
+    setRankToShow(randomAnime[1].rank);
+    setShowRank(true);
+    setShowButtons(false);
+    setTimeout(async () => {
+      if (randomAnime[1].rank < randomAnime[0].rank) {
+        await getOneRandomAnime();
+      }
+      setShowRank(false); 
+      setShowButtons(true);
+    }, 1000);
   };
 
 
   const handleLowerClick = async () => {
-    if (randomAnime[1]?.rank > randomAnime[0]?.rank) {
-      await getOneRandomAnime();
-    }
+    setRankToShow(randomAnime[1].rank);
+    setShowRank(true);
+    setShowButtons(false);
+    setTimeout(async () => {
+      if (randomAnime[1].rank > randomAnime[0].rank) {
+        await getOneRandomAnime();
+      }
+      setShowRank(false); 
+      setShowButtons(true);
+    }, 1000);
   };
 
   
@@ -40,11 +57,18 @@ function Game() {
           <CardImageWrapper>
             <img src={randomAnime[1]?.images.jpg.large_image_url} alt={randomAnime[1].title} />
             <div className="title-overlay">{randomAnime[1].title}</div>
+            {showRank && <div className="rank-overlay">Rank: {rankToShow}</div>}
           </CardImageWrapper>
-          <ButtonContainer>
-            <button onClick={handleHigherClick}>Higher <i className="fas fa-arrow-up"></i></button>
-            <button onClick={handleLowerClick}>Lower <i className="fas fa-arrow-down"></i></button>
-          </ButtonContainer>
+          {showButtons && (
+              <ButtonContainer>
+                <button onClick={handleHigherClick}>
+                  Higher <i className="fas fa-arrow-up"></i>
+                </button>
+                <button onClick={handleLowerClick}>
+                  Lower <i className="fas fa-arrow-down"></i>
+                </button>
+              </ButtonContainer>
+            )}
         </RightAnimeCard>
       </>
     )}
