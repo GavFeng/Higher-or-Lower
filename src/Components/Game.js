@@ -4,12 +4,21 @@ import styled from 'styled-components'
 
 
 function Game() {
-  const {randomAnime, getRandomAnime} = useGlobalContext();
+  const {randomAnime, getRandomAnime, getOneRandomAnime} = useGlobalContext();
 
-  const handleButtonClick = (action) => {
-    action();
+
+  const handleHigherClick = async () => {
+    if (randomAnime[1]?.rank < randomAnime[0]?.rank) {
+      await getOneRandomAnime();
+    }
   };
 
+
+  const handleLowerClick = async () => {
+    if (randomAnime[1]?.rank > randomAnime[0]?.rank) {
+      await getOneRandomAnime();
+    }
+  };
 
   
   useEffect(() => {
@@ -22,19 +31,19 @@ function Game() {
       <>
         <LeftAnimeCard>
           <CardImageWrapper>
-            <img src={randomAnime[0].images.jpg.large_image_url} alt={randomAnime[0].title} />
+            <img src={randomAnime[0]?.images.jpg.large_image_url} alt={randomAnime[0].title} />
             <div className="title-overlay">{randomAnime[0].title}</div>
             <div className="rank-overlay">Rank: {randomAnime[0].rank}</div>
           </CardImageWrapper>
         </LeftAnimeCard>
         <RightAnimeCard>
           <CardImageWrapper>
-            <img src={randomAnime[1].images.jpg.large_image_url} alt={randomAnime[1].title} />
+            <img src={randomAnime[1]?.images.jpg.large_image_url} alt={randomAnime[1].title} />
             <div className="title-overlay">{randomAnime[1].title}</div>
           </CardImageWrapper>
           <ButtonContainer>
-            <button>Higher <i className="fas fa-arrow-up"></i></button>
-            <button>Lower <i className="fas fa-arrow-down"></i></button>
+            <button onClick={handleHigherClick}>Higher <i className="fas fa-arrow-up"></i></button>
+            <button onClick={handleLowerClick}>Lower <i className="fas fa-arrow-down"></i></button>
           </ButtonContainer>
         </RightAnimeCard>
       </>
@@ -102,7 +111,7 @@ const ButtonContainer = styled.div`
   z-index: 3; 
 
   button {
-    background-color: transparent;
+    background-color:  rgba(0, 0, 0, 0.5);
     color: #FFD700;
     border: 2px solid #fff;
     border-radius: 10px;

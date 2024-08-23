@@ -15,6 +15,7 @@ const GlobalContext = createContext();
 
 const LOADING = "LOADING";
 const GET_RANDOM_ANIME = "GET_RANDOM_ANIME";
+const GET_ONE_RANDOM_ANIME = "GET_ONE_RANDOM_ANIME";
 
 
 //reducer
@@ -24,19 +25,42 @@ const reducer = (state, action) => {
             return{...state, loading: true}
         case GET_RANDOM_ANIME:
             return{...state, randomAnime: action.payload, loading: false}
+        case GET_ONE_RANDOM_ANIME:
+            return{...state, randomAnime: [state.randomAnime[1], action.payload], loading: false}
         default:
             return state;
     }
 }
 
+const previouslySelectedIds = new Set();
+
 const getRandomAnimeIds = () => {
-    const shuffledIds = IDS.sort(() => 0.5 - Math.random());
+
+    const availableIds = IDS.filter(id => !previouslySelectedIds.has(id));
+
+    const shuffledIds = availableIds.sort(() => 0.5 - Math.random());
 
     // Select the first two unique IDs from the shuffled array
     const [id1, id2] = shuffledIds.slice(0, 2);
 
+    previouslySelectedIds.add(id1);
+    previouslySelectedIds.add(id2);
 
     return [id1, id2];
+};
+
+const getOneRandomAnimeId = () => {
+    const availableIds = IDS.filter(id => !previouslySelectedIds.has(id));
+
+    if (availableIds.length === 0) {
+        throw new Error('No more unique IDs available');
+    }
+ 
+    const randomId = availableIds[Math.floor(Math.random() * availableIds.length)];
+
+    previouslySelectedIds.add(randomId);
+
+    return randomId;
 };
 
 export const GlobalContextProvider = ({children}) => {
@@ -66,10 +90,26 @@ export const GlobalContextProvider = ({children}) => {
         }
     };
 
+    const getOneRandomAnime = async () => {
+        dispatch({ type: LOADING });
+
+        const id = getOneRandomAnimeId();
+
+        try {
+            const response = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
+            const data = await response.json();
+            dispatch({ type: GET_ONE_RANDOM_ANIME, payload: data.data });
+        } catch (error) {
+            console.error('Failed to fetch anime data:', error);
+        }
+    };
+    
+
     return(
         <GlobalContext.Provider value={{
             ...state,
             getRandomAnime,
+            getOneRandomAnime,
         }}>
             {children}
         </GlobalContext.Provider>
