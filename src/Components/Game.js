@@ -7,57 +7,92 @@ function Game() {
   const {randomAnime, getRandomAnime, getOneRandomAnime} = useGlobalContext();
   const [showRank, setShowRank] = React.useState(false);
   const [showButtons, setShowButtons] = React.useState(true);
+  const [showText, setShowText] = React.useState(true);
   const [rankToShow, setRankToShow] = React.useState(null);
+  const [correctCount, setCorrectCount] = React.useState(0);
+  const [incorrectCount, setIncorrectCount] = React.useState(0);
 
 
   const handleHigherClick = async () => {
     setRankToShow(randomAnime[1].rank);
     setShowRank(true);
     setShowButtons(false);
-    setTimeout(async () => {
-      if (randomAnime[1].rank < randomAnime[0].rank) {
+    setShowText(false);
+  
+    if (randomAnime[1].rank < randomAnime[0].rank) {
+      // Guess is correct
+      setTimeout(async () => {
         await getOneRandomAnime();
-      }
-      setShowRank(false); 
-      setShowButtons(true);
-    }, 1000);
+        setCorrectCount(correctCount + 1);
+        setShowRank(false); 
+        setShowButtons(true);
+        setShowText(true);
+      }, 1000);
+    } else {
+      setTimeout(async () => {
+        await getOneRandomAnime();
+        setIncorrectCount(incorrectCount + 1);
+        setShowRank(false); 
+        setShowButtons(true);
+        setShowText(true);
+
+      }, 1000);
+    }
   };
-
-
+  
   const handleLowerClick = async () => {
     setRankToShow(randomAnime[1].rank);
     setShowRank(true);
     setShowButtons(false);
-    setTimeout(async () => {
-      if (randomAnime[1].rank > randomAnime[0].rank) {
+    setShowText(false);
+    if (randomAnime[1].rank > randomAnime[0].rank) {
+      // Guess is correct
+      setTimeout(async () => {
         await getOneRandomAnime();
-      }
-      setShowRank(false); 
-      setShowButtons(true);
-    }, 1000);
-  };
+        setCorrectCount(correctCount + 1);
+        setShowRank(false); 
+        setShowButtons(true);
+        setShowText(true);
+      }, 1000);
+    } else {
+      setTimeout(async () => {
+        await getOneRandomAnime();
+        setIncorrectCount(incorrectCount + 1);
+        setShowRank(false); 
+        setShowButtons(true);
+        setShowText(true);
+      }, 1000);
+    }
 
+  };
   
   useEffect(() => {
     getRandomAnime();
   }, [])
 
   return (
-    <Container>
+    <GameStyle>
     {randomAnime.length === 2 && (
       <>
         <LeftAnimeCard>
           <CardImageWrapper>
-            <img src={randomAnime[0]?.images.jpg.large_image_url} alt={randomAnime[0].title} />
-            <div className="title-overlay">{randomAnime[0].title}</div>
-            <div className="rank-overlay">Rank: {randomAnime[0].rank}</div>
+            <img src={randomAnime[0]?.images.jpg.large_image_url} alt="" />
+            <div className="title-overlay">{randomAnime[0]?.title}</div>
+            <div className="text1-overlay">has </div>
+            <div className="rank-overlay">Rank: {randomAnime[0]?.rank}</div>
           </CardImageWrapper>
         </LeftAnimeCard>
+        <Counter>
+          <CorrectCount>Correct: {correctCount}</CorrectCount>
+          <IncorrectCount>Incorrect: {incorrectCount}</IncorrectCount>
+       </Counter>
         <RightAnimeCard>
           <CardImageWrapper>
-            <img src={randomAnime[1]?.images.jpg.large_image_url} alt={randomAnime[1].title} />
-            <div className="title-overlay">{randomAnime[1].title}</div>
+            <img src={randomAnime[1]?.images.jpg.large_image_url} alt="" />
+            <div className="title-overlay">{randomAnime[1]?.title}</div>
+            {showText && <div className="text1-overlay">has </div>}
             {showRank && <div className="rank-overlay">Rank: {rankToShow}</div>}
+            {showText && <div className="text2-overlay">Rank than {randomAnime[0]?.title}</div>}
           </CardImageWrapper>
           {showButtons && (
               <ButtonContainer>
@@ -72,11 +107,11 @@ function Game() {
         </RightAnimeCard>
       </>
     )}
-  </Container>
+  </GameStyle>
   )
 }
 
-const Container = styled.div`
+const GameStyle = styled.div`
   padding: 1rem 1rem;
   background-color: #001B3A;
   display: flex;
@@ -85,6 +120,37 @@ const Container = styled.div`
   box-sizing: border-box;
   overflow: hidden; 
 `;
+const Counter = styled.div`
+  position: absolute;
+  top: 10px;
+  display: flex;
+  left: 50.25%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: #333;
+  z-index: 3; 
+`;
+
+const CorrectCount = styled.p`
+  margin: 0;
+  padding: 5px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  color: #0f0; 
+`;
+
+const IncorrectCount = styled.p`
+  margin: 0;
+  padding: 5px;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  color: #f00; 
+`;
+
 
 const CardImageWrapper = styled.div`
   position: relative; 
@@ -98,16 +164,25 @@ const CardImageWrapper = styled.div`
     height: 100%; 
     object-fit: cover; 
   }
-
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 1; 
+  }
   .title-overlay {
     position: absolute;
-    top: 45%;
+    top: 43%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff; 
-    font-size: 1.5rem; 
-    z-index: 1; 
-    background: rgba(0, 0, 0, 0.5); 
+    font-size: 2rem;
+    font-weight: bold; 
+    z-index: 2; 
     padding: 0.5rem; 
     border-radius: 5px; 
   }
@@ -116,17 +191,40 @@ const CardImageWrapper = styled.div`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #ECBD00; 
+    color: #fff989;
     font-size: 2.5rem; 
-    z-index: 1; 
-    background: rgba(0, 0, 0, 0.5); 
+    font-weight: bold;
+    z-index: 2; 
+    padding: 0.5rem; 
+    border-radius: 5px; 
+  }
+
+  .text1-overlay {
+    position: absolute;
+    top: 46.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff; 
+    font-size: 1.25rem; 
+    z-index: 2; 
+    padding: 0.5rem; 
+    border-radius: 5px; 
+  }
+  .text2-overlay {
+    position: absolute;
+    top: 63%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff; 
+    font-size: 1.15rem; 
+    z-index: 2; 
     padding: 0.5rem; 
     border-radius: 5px; 
   }
 `;
 const ButtonContainer = styled.div`
   position: absolute; 
-  top: 50%;
+  top: 49%;
   left: 75%;
   transform: translateX(-50%);
   flex-direction: column;
@@ -135,8 +233,8 @@ const ButtonContainer = styled.div`
   z-index: 3; 
 
   button {
-    background-color:  rgba(0, 0, 0, 0.5);
-    color: #FFD700;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff989;
     border: 2px solid #fff;
     border-radius: 10px;
     padding: 1.25rem 2.25rem;
