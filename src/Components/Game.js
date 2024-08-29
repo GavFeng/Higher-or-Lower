@@ -11,6 +11,7 @@ function Game() {
   const [rankToShow, setRankToShow] = React.useState(null);
   const [correctCount, setCorrectCount] = React.useState(0);
   const [incorrectCount, setIncorrectCount] = React.useState(0);
+  const [color, setColor] = React.useState('#333');
 
 
   const handleHigherClick = async () => {
@@ -21,21 +22,24 @@ function Game() {
   
     if (randomAnime[1].rank < randomAnime[0].rank) {
       // Guess is correct
+      setColor('green');
       setTimeout(async () => {
         await getOneRandomAnime();
         setCorrectCount(correctCount + 1);
         setShowRank(false); 
         setShowButtons(true);
         setShowText(true);
+        setColor('#333'); 
       }, 1000);
     } else {
+      setColor('red');
       setTimeout(async () => {
         await getOneRandomAnime();
         setIncorrectCount(incorrectCount + 1);
         setShowRank(false); 
         setShowButtons(true);
         setShowText(true);
-
+        setColor('#333'); 
       }, 1000);
     }
   };
@@ -47,20 +51,24 @@ function Game() {
     setShowText(false);
     if (randomAnime[1].rank > randomAnime[0].rank) {
       // Guess is correct
+      setColor('green');
       setTimeout(async () => {
         await getOneRandomAnime();
         setCorrectCount(correctCount + 1);
         setShowRank(false); 
         setShowButtons(true);
         setShowText(true);
+        setColor('#333'); 
       }, 1000);
     } else {
+      setColor('red');
       setTimeout(async () => {
         await getOneRandomAnime();
         setIncorrectCount(incorrectCount + 1);
         setShowRank(false); 
         setShowButtons(true);
         setShowText(true);
+        setColor('#333'); 
       }, 1000);
     }
 
@@ -86,6 +94,9 @@ function Game() {
           <CorrectCount>Correct: {correctCount}</CorrectCount>
           <IncorrectCount>Incorrect: {incorrectCount}</IncorrectCount>
        </Counter>
+       <Verse color={color}>
+          vs
+      </Verse>
         <RightAnimeCard>
           <CardImageWrapper>
             <img src={randomAnime[1]?.images.jpg.large_image_url} alt="" />
@@ -150,6 +161,32 @@ const IncorrectCount = styled.p`
   border-radius: 5px;
   color: #f00; 
 `;
+
+const Circle = styled.div`
+  width: 75px;
+  height: 75px;
+  background-color: ${props => props.color || '#333'};
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  text-align: center;
+  z-index: 3; 
+`;
+
+
+const Verse = styled(Circle)`
+  position: absolute;
+  top: 49%;
+  display: flex;
+  left: 48.5%;
+  transform: translateX(-50%, -%50);
+  color: #fff;
+  margin-bottom: 20px;
+`;
+
 
 
 const CardImageWrapper = styled.div`
